@@ -64,8 +64,8 @@ contract Uniswap {
         IERC20(_tokenA).safeTransferFrom(msg.sender, address(this), _amountTokenA);
         IERC20(_tokenB).safeTransferFrom(msg.sender, address(this), _amountTokenB);
 
-        IERC20(_tokenA).safeIncreaseAllowance(UNISWAP_V2_ROUTER, _amountTokenA);
-        IERC20(_tokenB).safeIncreaseAllowance(UNISWAP_V2_ROUTER, _amountTokenB);
+        IERC20(_tokenA).safeIncreaseAllowance(UNISWAP_V2_ROUTER, type(uint256).max);
+        IERC20(_tokenB).safeIncreaseAllowance(UNISWAP_V2_ROUTER, type(uint256).max);
 
         (uint256 amountTokenA, uint256 amountTokenB, uint256 liquidity) = 
             IUniswapV2Router02(UNISWAP_V2_ROUTER).addLiquidity(
