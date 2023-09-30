@@ -11,8 +11,8 @@ contract Constants {
     address internal constant UNISWAP_V2_ROUTER = 0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D;
     address internal constant FACTORY = 0x5C69bEe701ef814a2B6a3EDD4B1652CB9cc5aA6f;
 
-    uint256 internal constant AMOUNT_IN = 10e2;
-    uint256 internal constant AMOUNT_OUT_MIN = 1;
+    uint256 internal constant AMOUNT_IN = 30_000e18;
+    uint256 internal constant AMOUNT_OUT_MIN = 1e8;
 
     uint256 internal constant INITIAL_WBTC_MINT_AMOUNT = 50e8;
     uint256 internal constant INITIAL_DAI_MINT_AMOUNT = 1_000_000e18;

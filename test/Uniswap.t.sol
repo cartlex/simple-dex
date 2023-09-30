@@ -15,51 +15,52 @@ import {SafeERC20} from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol
 contract UniswapTest is Test, Constants {
     using SafeERC20 for IERC20;
 
-    address public USER_1 = vm.addr(1231);
-    address public OWNER = vm.addr(0xCFAE);
-
+    address public user1 = vm.addr(1231);
+    address public owner = vm.addr(0xCFAE);
     Uniswap public uniswap;
 
     function setUp() public {
         vm.createSelectFork(vm.envString("MAINNET_RPC_URL"));
-        vm.startPrank(OWNER);
+        vm.startPrank(owner);
 
         uniswap = new Uniswap();
 
-        deal(DAI, USER_1, INITIAL_DAI_MINT_AMOUNT);
-        deal(USDT, USER_1, INITIAL_USDT_MINT_AMOUNT);
-        deal(WBTC, USER_1, INITIAL_WBTC_MINT_AMOUNT);
+        deal(DAI, user1, INITIAL_DAI_MINT_AMOUNT);
+        deal(USDT, user1, INITIAL_USDT_MINT_AMOUNT);
+        deal(WBTC, user1, INITIAL_WBTC_MINT_AMOUNT);
 
         vm.stopPrank();
     }
 
-    // function testSwap() public {
-    //     vm.startPrank(DAI_WHALE);
-    //     IERC20(DAI).safeIncreaseAllowance(address(uniswap), AMOUNT_IN);
-    //     IERC20(WBTC).safeIncreaseAllowance(address(uniswap), AMOUNT_IN);
-    //     uint256 daiBalanceBefore = IERC20(DAI).balanceOf(DAI_WHALE);
-    //     uint256 WBTCBalanceBefore = IERC20(WBTC).balanceOf(DAI_WHALE);
+    function test_user1_Swap() public {
+        vm.startPrank(user1);
 
-    //     console2.log("DAI balance before:", daiBalanceBefore);
-    //     console2.log("WBTC balance before:", WBTCBalanceBefore);
+        IERC20(DAI).safeIncreaseAllowance(address(uniswap), AMOUNT_IN);
 
-    //     uniswap.swap(
-    //         DAI,
-    //         WBTC,
-    //         AMOUNT_IN,
-    //         AMOUNT_OUT_MIN,
-    //         DAI_WHALE,
-    //         block.timestamp + 1
-    //     );
-    //     uint256 daiBalanceAfter = IERC20(DAI).balanceOf(DAI_WHALE);
-    //     uint256 WBTCBalanceAfter = IERC20(WBTC).balanceOf(DAI_WHALE);
+        uint256 user1DAIBalanceBefore = IERC20(DAI).balanceOf(user1);
+        uint256 user1WBTCBalanceBefore = IERC20(WBTC).balanceOf(user1);
+        
+        console2.log(StdStyle.magenta("================================================"));
+        emit log_named_decimal_uint("DAI balance before", user1DAIBalanceBefore, ERC20(DAI).decimals());
+        emit log_named_decimal_uint("WBTC balance before", user1WBTCBalanceBefore, ERC20(WBTC).decimals());
 
-    //     console2.log("DAI balance after:", daiBalanceAfter);
-    //     console2.log("WBTC balance after:", WBTCBalanceAfter);
-    // }
+        uniswap.swap(
+            DAI,
+            WBTC,
+            AMOUNT_IN,
+            AMOUNT_OUT_MIN,
+            user1,
+            block.timestamp + 1
+        );
+        uint256 user1DAIBalanceAfter = IERC20(DAI).balanceOf(user1);
+        uint256 user1WBTCBalanceAfter = IERC20(WBTC).balanceOf(user1);
 
-    function testUser1AddLiquidity() public {
-        vm.startPrank(USER_1);
+        emit log_named_decimal_uint("DAI balance after", user1DAIBalanceAfter, ERC20(DAI).decimals());
+        emit log_named_decimal_uint("WBTC balance after", user1WBTCBalanceAfter, ERC20(WBTC).decimals());
+    }
+
+    function test_user1_Add_Liquidity() public {
+        vm.startPrank(user1);
 
         address pair = IUniswapV2Factory(FACTORY).getPair(DAI, WBTC);
 
@@ -79,7 +80,7 @@ contract UniswapTest is Test, Constants {
             WBTC,
             amountDAIToAdd,
             amountWBTCToAdd,
-            USER_1,
+            user1,
             block.timestamp + 1
         );
 
