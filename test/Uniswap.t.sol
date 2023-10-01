@@ -32,7 +32,7 @@ contract UniswapTest is Test, Constants {
         vm.stopPrank();
     }
 
-    function test_swap() public {
+    function test_swapExactTokensForTokens() public {
         vm.startPrank(user1);
 
         IERC20(DAI).safeIncreaseAllowance(address(uniswap), AMOUNT_IN);
@@ -44,7 +44,7 @@ contract UniswapTest is Test, Constants {
         emit log_named_decimal_uint("DAI balance before", user1DAIBalanceBefore, ERC20(DAI).decimals());
         emit log_named_decimal_uint("WBTC balance before", user1WBTCBalanceBefore, ERC20(WBTC).decimals());
 
-        uniswap.swap(
+        uniswap.swapExactTokensForTokens(
             DAI,
             WBTC,
             AMOUNT_IN,
@@ -57,6 +57,49 @@ contract UniswapTest is Test, Constants {
 
         emit log_named_decimal_uint("DAI balance after", user1DAIBalanceAfter, ERC20(DAI).decimals());
         emit log_named_decimal_uint("WBTC balance after", user1WBTCBalanceAfter, ERC20(WBTC).decimals());
+    }
+
+    function test_swapTokensForExactTokens() public {
+        vm.startPrank(user1);
+
+        IERC20(DAI).safeIncreaseAllowance(address(uniswap), AMOUNT_IN);
+
+        address pair = IUniswapV2Factory(FACTORY).getPair(DAI, WBTC);
+        (uint256 reserve0Before, uint256 reserve1Before,) = IUniswapV2Pair(pair).getReserves();
+
+        uint256 user1DAIBalanceBefore = IERC20(DAI).balanceOf(user1);
+        uint256 user1WBTCBalanceBefore = IERC20(WBTC).balanceOf(user1);
+
+        console2.log(StdStyle.magenta("================================================"));
+        emit log_named_decimal_uint("DAI balance before", user1DAIBalanceBefore, ERC20(DAI).decimals());
+        emit log_named_decimal_uint("WBTC balance before", user1WBTCBalanceBefore, ERC20(WBTC).decimals());
+        emit log_named_decimal_uint("reserve WBTC before", reserve0Before, ERC20(WBTC).decimals());
+        emit log_named_decimal_uint("reserve DAI beofre", reserve1Before, ERC20(DAI).decimals());
+
+        uniswap.swapTokensForExactTokens(
+            DAI,
+            WBTC,
+            5e7,
+            AMOUNT_IN,
+            user1,
+            block.timestamp + 1
+        );
+
+        uint256 user1DAIBalanceAfter = IERC20(DAI).balanceOf(user1);
+        uint256 user1WBTCBalanceAfter = IERC20(WBTC).balanceOf(user1);
+        uint256 poolDAIBalanceAfter = IERC20(DAI).balanceOf(pair);
+        uint256 poolWBTCBalanceAfter = IERC20(WBTC).balanceOf(pair);
+        
+        (uint256 reserve0After, uint256 reserve1After,) = IUniswapV2Pair(pair).getReserves();
+
+        console2.log(StdStyle.magenta("================================================"));
+        emit log_named_decimal_uint("DAI balance after", user1DAIBalanceAfter, ERC20(DAI).decimals());
+        emit log_named_decimal_uint("WBTC balance after", user1WBTCBalanceAfter, ERC20(WBTC).decimals());
+        emit log_named_decimal_uint("reserve WBTC after", reserve0After, ERC20(WBTC).decimals());
+        emit log_named_decimal_uint("reserve DAI after", reserve1After, ERC20(DAI).decimals());
+        emit log_named_decimal_uint("pool DAI balance after", poolDAIBalanceAfter, ERC20(DAI).decimals());
+        emit log_named_decimal_uint("pool DAI balance after", poolWBTCBalanceAfter, ERC20(WBTC).decimals());
+
     }
 
     function test_addLiquidity() public {

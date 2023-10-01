@@ -20,7 +20,7 @@ contract Uniswap {
      * @param _to address to send output tokens to.
      * @param _deadline timestamp before Tx is still valid.
      */
-    function swap(
+    function swapExactTokensForTokens(
         address _tokenIn,
         address _tokenOut,
         uint256 _amountIn,
@@ -39,6 +39,39 @@ contract Uniswap {
         IUniswapV2Router02(UNISWAP_V2_ROUTER).swapExactTokensForTokens(
             _amountIn, 
             _amountOutMin,
+            path,
+            _to,
+            _deadline
+        );
+    }
+
+    /**
+     * @param _tokenIn address of the token we want to swap.
+     * @param _tokenOut address of the token we want to receive.
+     * @param _amountOut minimum amount of output tokens to receive.
+     * @param _amountInMax maximum amount of input tokens that can be required before the transaction reverts.
+     * @param _to address to send output tokens to.
+     * @param _deadline timestamp before Tx is still valid.
+     */
+    function swapTokensForExactTokens(
+        address _tokenIn,
+        address _tokenOut,
+        uint256 _amountOut,
+        uint256 _amountInMax,
+        address _to,
+        uint _deadline
+    ) external {
+        IERC20(_tokenIn).safeTransferFrom(msg.sender, address(this), _amountInMax);
+        IERC20(_tokenIn).safeIncreaseAllowance(UNISWAP_V2_ROUTER, _amountInMax);
+
+        address[] memory path = new address[](3);
+        path[0] = _tokenIn;
+        path[1] = WETH;
+        path[2] = _tokenOut;
+
+        IUniswapV2Router02(UNISWAP_V2_ROUTER).swapTokensForExactTokens(
+            _amountOut,
+            _amountInMax,
             path,
             _to,
             _deadline
