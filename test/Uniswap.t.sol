@@ -76,11 +76,13 @@ contract UniswapTest is Test, Constants {
         emit log_named_decimal_uint("reserve WBTC before", reserve0Before, ERC20(WBTC).decimals());
         emit log_named_decimal_uint("reserve DAI beofre", reserve1Before, ERC20(DAI).decimals());
 
+        uint256 amount_out_min = 5e7;
+        uint256 amount_in_max = 25_000e18;
         uniswap.swapTokensForExactTokens(
             DAI,
             WBTC,
-            5e7,
-            AMOUNT_IN,
+            amount_out_min,
+            amount_in_max,
             user1,
             block.timestamp + 1
         );
@@ -90,7 +92,7 @@ contract UniswapTest is Test, Constants {
         uint256 poolDAIBalanceAfter = IERC20(DAI).balanceOf(pair);
         uint256 poolWBTCBalanceAfter = IERC20(WBTC).balanceOf(pair);
         
-        (uint256 reserve0After, uint256 reserve1After,) = IUniswapV2Pair(pair).getReserves();
+        (uint112 reserve0After, uint112 reserve1After,) = IUniswapV2Pair(pair).getReserves();
 
         console2.log(StdStyle.magenta("================================================"));
         emit log_named_decimal_uint("DAI balance after", user1DAIBalanceAfter, ERC20(DAI).decimals());
@@ -98,8 +100,7 @@ contract UniswapTest is Test, Constants {
         emit log_named_decimal_uint("reserve WBTC after", reserve0After, ERC20(WBTC).decimals());
         emit log_named_decimal_uint("reserve DAI after", reserve1After, ERC20(DAI).decimals());
         emit log_named_decimal_uint("pool DAI balance after", poolDAIBalanceAfter, ERC20(DAI).decimals());
-        emit log_named_decimal_uint("pool DAI balance after", poolWBTCBalanceAfter, ERC20(WBTC).decimals());
-
+        emit log_named_decimal_uint("pool WBTC balance after", poolWBTCBalanceAfter, ERC20(WBTC).decimals());
     }
 
     function test_addLiquidity() public {
